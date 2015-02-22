@@ -1,4 +1,4 @@
-Tile = function(img, x, y, ...) --Recebe o nome, ponteiro para o pai e os parametros do buff especifico
+Tile = function(img, x, y, ...)
     local tab = {}
     tab.arg = arg
     tab.img = img
