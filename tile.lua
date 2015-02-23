@@ -1,15 +1,16 @@
-Tile = function(img, x, y, ...)
-    local tab = {}
-    tab.arg = arg
-    tab.img = img
-    tab.x = x
-    tab.y = y
+Tile = function(img, x, y)
+    local tile = {}
+    tile.img = img
+    tile.x = x
+    tile.y = y
     local function isFull(self) 
     	if (self.entity == nil) then
     		return false
     	end
     	return true
     end
-    tab.isFull = isFull
-    return tab
+    tile.entity = nil
+    tile.inAttackArea = false
+    tile.isFull = isFull
+    return tile
 end

@@ -1,6 +1,5 @@
-Button = function(imgfile, x, y, w, h, ...)
+Button = function(imgfile, x, y, w, h)
     local butt = {}
-    butt.arg = arg
     butt.x = x
     butt.y = y
     butt.w = w
