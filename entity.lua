@@ -1,10 +1,14 @@
 Entity = function(img, x, y, moves, ...)
-    local tab = {}
-    tab.moved = 0
-    tab.arg = arg
-    tab.img = img
-    tab.x = x
-    tab.y = y
-    tab.moves = moves
-    return tab
+    local ent = {}
+    ent.arg = arg
+    ent.img = img
+    ent.x = x
+    ent.y = y
+    ent.moves = moves
+
+    ent.moving = false
+    ent.moved = 0
+    ent.nextTile = nil
+    ent.onTop = nil
+    return ent
 end

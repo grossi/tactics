@@ -1,9 +1,10 @@
-Button = function(x, y, w, h, ...)
-    local tab = {}
-    tab.arg = arg
-    tab.x = x
-    tab.y = y
-    tab.w = w
-    tab.h = h
-    return tab
+Button = function(imgfile, x, y, w, h, ...)
+    local butt = {}
+    butt.arg = arg
+    butt.x = x
+    butt.y = y
+    butt.w = w
+    butt.h = h
+    butt.img = love.graphics.newImage(imgfile)
+    return butt
 end
