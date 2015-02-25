@@ -3,7 +3,7 @@ Tile = function(img, x, y)
     tile.img = img
     tile.x = x
     tile.y = y
-    local function isFull(self) 
+    local function IsFull(self) 
     	if (self.entity == nil) then
     		return false
     	end
@@ -11,6 +11,6 @@ Tile = function(img, x, y)
     end
     tile.entity = nil
     tile.inAttackArea = false
-    tile.isFull = isFull
+    tile.IsFull = IsFull
     return tile
 end

@@ -11,7 +11,7 @@ Field = function(tileImg, w, h)
         end
     end
     
-    local function getTile(self, x, y)
+    local function GetTile(self, x, y)
         for i, v in ipairs(self) do
             for j, tile in ipairs(v) do
                 if(math.floor(x/50) == i and math.floor(y/50) == j) then
@@ -22,7 +22,17 @@ Field = function(tileImg, w, h)
         return nil
     end
 
-    field.getTile = getTile
+    local function Clear(self)
+        for i, v in ipairs(self) do
+            for j, tile in ipairs(v) do
+                tile.inAttackArea = false
+                tile.inMoveArea = false
+            end
+        end
+    end
+
+    field.Clear = Clear
+    field.GetTile = GetTile
 
     return field
 end

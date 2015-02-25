@@ -7,14 +7,16 @@ function love.load ()
 
 	-- Create States
 
-	state = 'move'
+	state = 'main'
 
 	-- Creates UI
 	buttons = {}
 	nextTurnButton = Button('nextTurnButton.png', 450, 50, 50, 50)
 	attackButton = Button('attackButton.png', 450, 125, 50, 50)
+	moveButton = Button('moveButton.png', 450, 200, 50, 50)
 	table.insert(buttons, nextTurnButton)
 	table.insert(buttons, attackButton)
+	table.insert(buttons, moveButton)
 	
 	-- Creates Field 
 
@@ -37,9 +39,15 @@ function love.update (dt)
 	x = love.mouse.getX()
 	y = love.mouse.getY()
 
-	-- Entity mouse movement
+	-- Main Stage
+
+	if(state == 'main') then
+
+	end
+
+	-- Move Stage
 	if(state == 'move') then
-		if(down and not currentEnt.moving) then
+		if(down and not currentEnt.moving) then -- If you start draggin the ent
 			if (currentEnt.x < x and x < currentEnt.x+50) then
 				if (currentEnt.y < y and y < currentEnt.y+50) then
 					currentEnt.moving = true
@@ -48,65 +56,55 @@ function love.update (dt)
 				end
 			end
 		end
-		if(currentEnt.moving) then
-			if(not down) then
+		if(currentEnt.moving) then  
+			if(not down) then -- If you stop draggin the ent		
 				currentEnt.moving = false
 				if(currentEnt.nextTile) then
+					local i, j = currentEnt.nextTile.x, currentEnt.nextTile.y
+					currentEnt.moved = currentEnt.moved + math.abs(currentEnt.i - i) + math.abs(currentEnt.j - j)
 					currentEnt.x = currentEnt.nextTile.x*50
 					currentEnt.y = currentEnt.nextTile.y*50
-					currentEnt.i = currentEnt.nextTile.x
-					currentEnt.j = currentEnt.nextTile.y
+					currentEnt.i = i
+					currentEnt.j = j
+					field:Clear()
+					currentEnt:MarkMoveArea(field)
 				end
 			else
 				currentEnt.x = x - 25
 				currentEnt.y = y - 25
 			end
 		end
-		for i,v in ipairs(field) do
-			for j,tile in ipairs(v) do
-				if(math.floor(x/50) == i and math.floor(y/50) == j) then
-					if(currentEnt.onTop ~= tile) then
-						if(down and currentEnt.moving) then
-							if(currentEnt.moves > currentEnt.moved) then
-								currentEnt.nextTile = tile
-								currentEnt.moved = currentEnt.moved + 1
-							end
-						end
+		local tile = field:GetTile(x, y)
+		if(tile~= nil) then
+			if(currentEnt.onTop ~= tile) then
+				if(down and currentEnt.moving) then
+					if(tile.inMoveArea) then
+						currentEnt.nextTile = tile
 					end
-					tile.mouseOnTop = true
-					currentEnt.onTop = tile
-				else
-					tile.mouseOnTop = false
 				end
 			end
+			currentEnt.onTop = tile
 		end
-		-- AttackButton
+	end
 
-		if(down) then
-			if (attackButton.x < x and x < attackButton.x+attackButton.w) then
-				if (attackButton.y < y and y < attackButton.y+attackButton.h) then
-					attackButton.pressed = true
-				end
-			end
-		elseif(attackButton.pressed) then
-			state = 'attack'
-			attackButton.pressed = false
-		end
-	elseif (state == 'attack') then
-		-- Attack Phase 
+
+	-- Attack Stage
+	if (state == 'attack') then 
 		local attackPressed = false
 		currentEnt:MarkAttackArea(field)
 		if down then
 			attackPressed = true
 		elseif attackPressed then
 			attackPressed = false
-			if( field:getTile(x, y).entity ) then
+			if( field:GetTile(x, y).entity ) then
 
 			end
 		end
 	end
 
-	-- UI mouse movement
+
+	-- UI
+
 	-- NextTurnButton
 	if(down) then
 		if (nextTurnButton.x < x and x < nextTurnButton.x+nextTurnButton.w) then
@@ -122,14 +120,29 @@ function love.update (dt)
 		nextTurnButton.pressed = false
 
 		-- Change the state to move
-		state = 'move'
+		state = 'main'
 
-		-- Reset the state of tiles 
-		for i, k in ipairs(field) do
-			for j,tile in ipairs(k) do
-				tile.inAttackArea = false 
-			end
-		end
+		field:Clear()
+	end
+
+	-- MoveButton
+	if(down) then
+		moveButton:MouseOnTop(x, y) -- Changes the state of button.pressed if mouse is on top
+	elseif(moveButton.pressed) then
+		field:Clear()
+		state = 'move'
+		currentEnt:MarkMoveArea(field)
+		moveButton.pressed = false
+	end
+
+	-- AttackButton
+	if(down) then
+		attackButton:MouseOnTop(x, y) -- Changes the state of button.pressed if mouse is on top
+	elseif(attackButton.pressed) then
+		field:Clear()
+		state = 'attack'
+		currentEnt:MarkAttackArea(field)
+		attackButton.pressed = false
 	end
 end
 
@@ -139,15 +152,20 @@ function love.draw ()
 		for j,tile in ipairs(k) do
 			local x = i*50
 			local y = j*50
-			if(tile.inAttackArea) then
+			if(tile.inAttackArea) then -- In attack area, red shade
 				local r, g, b, a = love.graphics.getColor()
 				love.graphics.setColor(255, 150, 150)
+				love.graphics.draw(tile.img, x, y)
+				love.graphics.setColor(r, g, b, a)
+			elseif(tile.inMoveArea) then -- In move area, blue shade
+				local r, g, b, a = love.graphics.getColor()
+				love.graphics.setColor(150, 150, 255)
 				love.graphics.draw(tile.img, x, y)
 				love.graphics.setColor(r, g, b, a)
 			else
 				love.graphics.draw(tile.img, x, y)
 			end
-			if( tile.mouseOnTop and down and currentEnt.moving and currentEnt.nextTile == tile) then
+			if( down and currentEnt.moving and currentEnt.nextTile == tile) then
 				love.graphics.polygon('fill', x, y, x+50, y, x+50, y+50, x, y+50)
 			end
 		end

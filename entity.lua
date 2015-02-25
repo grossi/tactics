@@ -12,6 +12,8 @@ Entity = function(img, i, j, moves, tile)
     ent.moved = 0
     ent.nextTile = nil
     ent.onTop = nil
+    ent.inMoveArea = false
+    ent.inAttackArea = false
 
     local function MarkAttackArea(self, field)
         if(field.w >= self.i+1 ) then
@@ -28,9 +30,28 @@ Entity = function(img, i, j, moves, tile)
         end
     end
 
-    ent.MarkAttackArea = MarkAttackArea
+    local function MarkMoveArea(self, field)
+        local ms = self.moves - self.moved
+        for i = 0, ms do
+            for j = 0, ms-i do
+                if (field.h >= self.i + i and field.w >= self.j + j) then
+                    field[self.i + i][self.j + j].inMoveArea = true
+                end
+                if (self.i - i > 0 and field.w >= self.j + j) then
+                    field[self.i - i][self.j + j].inMoveArea = true
+                end
+                if (field.h >= self.i + i and self.j - j > 0) then
+                    field[self.i + i][self.j - j].inMoveArea = true
+                end
+                if (self.i - i > 0 and self.j - j > 0) then
+                    field[self.i - i][self.j - j].inMoveArea = true
+                end
+            end
+        end
+    end
 
-    ent.entity = ent
+    ent.MarkAttackArea = MarkAttackArea
+    ent.MarkMoveArea = MarkMoveArea    
 
     return ent
 end
