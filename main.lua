@@ -62,12 +62,13 @@ function love.update (dt)
 				if(currentEnt.nextTile) then
 					local i, j = currentEnt.nextTile.x, currentEnt.nextTile.y
 					currentEnt.moved = currentEnt.moved + math.abs(currentEnt.i - i) + math.abs(currentEnt.j - j)
-					currentEnt.x = currentEnt.nextTile.x*50
-					currentEnt.y = currentEnt.nextTile.y*50
+					currentEnt.x = i*50
+					currentEnt.y = j*50
 					currentEnt.i = i
 					currentEnt.j = j
 					field:Clear()
 					currentEnt:MarkMoveArea(field)
+					currentEnt.nextTile.entity = currentEnt
 				end
 			else
 				currentEnt.x = x - 25
@@ -90,14 +91,22 @@ function love.update (dt)
 
 	-- Attack Stage
 	if (state == 'attack') then 
-		local attackPressed = false
 		currentEnt:MarkAttackArea(field)
-		if down then
-			attackPressed = true
-		elseif attackPressed then
-			attackPressed = false
-			if( field:GetTile(x, y).entity ) then
-
+		if down and not currentEnt.attacking then
+			currentEnt.attacking = true
+		elseif currentEnt.attacking and not down then
+			currentEnt.attacking = false
+			local t = field:GetTile(x, y)
+			if t then
+				local ent = t.entity
+				if( ent and t.inAttackArea ) then
+					ent.hp = ent.hp - currentEnt.dmg
+					currentEnt.attacked = currentEnt.attacked + 1
+					if currentEnt.attacks >= currentEnt.attacked then
+						state = 'main'
+						field:Clear()
+					end
+				end
 			end
 		end
 	end
@@ -115,6 +124,7 @@ function love.update (dt)
 	elseif(nextTurnButton.pressed) then
 		-- Changes the currentEnt
 		currentEnt.moved = 0
+		currentEnt.attacked = 0
 		entI = (entI)%#ents + 1
 		currentEnt = ents[entI]
 		nextTurnButton.pressed = false
@@ -136,13 +146,15 @@ function love.update (dt)
 	end
 
 	-- AttackButton
-	if(down) then
-		attackButton:MouseOnTop(x, y) -- Changes the state of button.pressed if mouse is on top
-	elseif(attackButton.pressed) then
-		field:Clear()
-		state = 'attack'
-		currentEnt:MarkAttackArea(field)
-		attackButton.pressed = false
+	if currentEnt.attacks > currentEnt.attacked then
+		if down then
+			attackButton:MouseOnTop(x, y) -- Changes the state of button.pressed if mouse is on top
+		elseif(attackButton.pressed) then
+			field:Clear()
+			state = 'attack'
+			currentEnt:MarkAttackArea(field)
+			attackButton.pressed = false
+		end
 	end
 end
 
@@ -152,7 +164,7 @@ function love.draw ()
 		for j,tile in ipairs(k) do
 			local x = i*50
 			local y = j*50
-			if(tile.inAttackArea) then -- In attack area, red shade
+			if(tile.inAttackArea ) then -- In attack area, red shade
 				local r, g, b, a = love.graphics.getColor()
 				love.graphics.setColor(255, 150, 150)
 				love.graphics.draw(tile.img, x, y)
@@ -197,5 +209,8 @@ function love.draw ()
 		love.graphics.draw(b.img, b.x, b.y)
 	end
 
-	love.graphics.print(field.w .. ', ' .. field.h , 5, 5)
+	love.graphics.print('ent1:' .. ents[1].hp .. ' ent 2:' .. ents[2].hp , 5, 5)
+	if attackPressed then
+		love.graphics.print('Attack!', 150, 5)
+	end
 end

@@ -4,12 +4,17 @@ Entity = function(img, i, j, moves, tile)
     ent.i = i
     ent.j = j
     ent.moves = moves
+    ent.attacks = 1
 
     ent.x = i*50
     ent.y = j*50
 
+    ent.hp = 5
+    ent.dmg = 2
     ent.moving = false
+    ent.attacking = false
     ent.moved = 0
+    ent.attacked = 0
     ent.nextTile = nil
     ent.onTop = nil
     ent.inMoveArea = false
