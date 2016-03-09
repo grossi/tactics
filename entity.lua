@@ -1,3 +1,5 @@
+require "skill"
+
 Entity = function(img, i, j, moves, tile)
     local ent = {}
     ent.img = img
@@ -20,6 +22,9 @@ Entity = function(img, i, j, moves, tile)
     ent.inMoveArea = false
     ent.inAttackArea = false
 
+
+    ent.attackSkill = AttackSkill()
+    
     local function MarkAttackArea(self, field)
         if(field.w >= self.i+1 ) then
             field[self.i+1][self.j].inAttackArea = true
