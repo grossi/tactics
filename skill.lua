@@ -5,11 +5,10 @@ AttackSkill = function()
         for i = -2, 2 do
             for j = -2, 2 do
                 if( math.abs(i)+math.abs(j) < 3 and 
-                field.w >= ent.i+i and 
+                field.w >= ent.i+i and
                 ent.i+i > 0  and
                 field.h >= ent.j+j  and
-                ent.j+j > 0 and
-                field.w >= ent.i+i ) then
+                ent.j+j > 0 ) then
                     field[ent.i+i][ent.j+j].inAttackRange = true
                 end
             end
