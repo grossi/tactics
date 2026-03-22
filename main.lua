@@ -61,7 +61,7 @@ function love.load ()
 end
 
 function love.update (dt)
-	down = love.mouse.isDown("l")
+	down = love.mouse.isDown(1)
 	x = love.mouse.getX()
 	y = love.mouse.getY()
 
@@ -296,17 +296,17 @@ function love.draw ()
 				local y = j*50
 				if(tile.inAttackArea ) then -- In attack area, red shade
 					local r, g, b, a = love.graphics.getColor()
-					love.graphics.setColor(200, 100, 100)
+					love.graphics.setColor(0.784, 0.392, 0.392)
 					love.graphics.draw(tile.img, x, y)
 					love.graphics.setColor(r, g, b, a)
 				elseif(tile.inAttackRange ) then -- In attack range, pink shade
 					local r, g, b, a = love.graphics.getColor()
-					love.graphics.setColor(255, 200, 200)
+					love.graphics.setColor(1.0, 0.784, 0.784)
 					love.graphics.draw(tile.img, x, y)
 					love.graphics.setColor(r, g, b, a)
 				elseif(tile.inMoveArea) then -- In move area, blue shade
 					local r, g, b, a = love.graphics.getColor()
-					love.graphics.setColor(150, 150, 255)
+					love.graphics.setColor(0.588, 0.588, 1.0)
 					love.graphics.draw(tile.img, x, y)
 					love.graphics.setColor(r, g, b, a)
 				else
@@ -335,7 +335,7 @@ function love.draw ()
 
 		-- Draw the owner of the turn in a different shade
 		local r, g, b, a = love.graphics.getColor()
-		love.graphics.setColor(150, 150, 255)
+		love.graphics.setColor(0.588, 0.588, 1.0)
 		love.graphics.draw(currentEnt.img, currentEnt.x+1, currentEnt.y+5)
 		love.graphics.setColor(r, g, b, a)
 
